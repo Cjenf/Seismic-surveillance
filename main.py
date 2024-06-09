@@ -1,10 +1,34 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
+from typing import Dict, Union, Any
+from pydantic import BaseModel, ValidationError
 import sys
 import json
 import os
 import requests as req
 import json
 from io import BytesIO
+
+class ERF(BaseModel):
+    REPORTCOLOR:Union[str,int]
+    REPORTCONTENT:Union[str,int]
+    RECORDIMAGEURI:Union[str,int]
+    WEB:Union[str,int]
+    ORIGINTIME:Union[str,int]
+    LOCATION:Union[str,int]
+    EPICENTERLATITUDE:int
+    EPICENTERLONGITUDE:int
+    MAGNITUDAVALUE:int
+
+class EWFI(BaseModel):
+    REPORTCOLOR:Union[str,int]
+    REPORTCONTENT:Union[str,int]
+    RECORDIMAGEURI:Union[str,int]
+    WEB:Union[str,int]
+    ORIGINTIME:Union[str,int]
+    LOCATION:Union[str,int]
+    EPICENTERLATITUDE:int
+    EPICENTERLONGITUDE:int
+    MAGNITUDAVALUE:int
 #無感地震
 try:
     url="https://opendata.cwa.gov.tw/api/v1/rest/datastore/E-A0016-001?Authorization=CWA-877EA591-BC8A-4DD2-8B60-4272DAC4BBAC&format=JSON&AreaName="
@@ -33,7 +57,6 @@ except Exception as e:
     print(e)    
 
 path="C:\Code\Seismic-surveillance"
-_EWFI,_ERF=tuple(file for file in os.listdir(path) if file.endswith('.json'))
 
 app = QtWidgets.QApplication(sys.argv)
 
@@ -47,37 +70,35 @@ Form.setStyleSheet(
     "background-color: #411F1F;"
 )
 
-with open(_EWFI,"r",encoding="utf-8") as f: #無感地震
+with open("ewfi.json","r",encoding="utf-8") as f: #無感地震
     data = json.load(f)
-    erf={}
-
-    erf.update(
-        _REPORTCOLOR=data["records"]["Earthquake"][0]["ReportColor"],
-        _REPORTCONTENT=data["records"]["Earthquake"][0]["ReportContent"],
-        _RECORDIMAGEURI=data["records"]["Earthquake"][0]["ReportImageURI"],
-        _WEB=data["records"]["Earthquake"][0]["Web"],
-        _ORIGINTIME=data["records"]["Earthquake"][0]["EarthquakeInfo"]["OriginTime"],
-        _LOCATION=data["records"]["Earthquake"][0]["EarthquakeInfo"]["Epicenter"]["Location"],
-        _EPICENTERLATITUDE=data["records"]["Earthquake"][0]["EarthquakeInfo"]["Epicenter"]["EpicenterLatitude"], #震央緯度
-        _EPICENTERLONGITUDE=data["records"]["Earthquake"][0]["EarthquakeInfo"]["Epicenter"]["EpicenterLongitude"],#震央經度
-        _MAGNITUDAVALUE=data["records"]["Earthquake"][0]["EarthquakeInfo"]["EarthquakeMagnitude"]["MagnitudeValue"], #"芮氏規模"
+    ewfi=EWFI(
+            REPORTCOLOR=data["records"]["Earthquake"][0]["ReportColor"],
+            REPORTCONTENT=data["records"]["Earthquake"][0]["ReportContent"],
+            RECORDIMAGEURI=data["records"]["Earthquake"][0]["ReportImageURI"],
+            WEB=data["records"]["Earthquake"][0]["Web"],
+            ORIGINTIME=data["records"]["Earthquake"][0]["EarthquakeInfo"]["OriginTime"],
+            LOCATION=data["records"]["Earthquake"][0]["EarthquakeInfo"]["Epicenter"]["Location"],
+            EPICENTERLATITUDE=int(data["records"]["Earthquake"][0]["EarthquakeInfo"]["Epicenter"]["EpicenterLatitude"]), #震央緯度
+            EPICENTERLONGITUDE=int(data["records"]["Earthquake"][0]["EarthquakeInfo"]["Epicenter"]["EpicenterLongitude"]),#震央經度
+            MAGNITUDAVALUE=int(data["records"]["Earthquake"][0]["EarthquakeInfo"]["EarthquakeMagnitude"]["MagnitudeValue"]) #"芮氏規模"
     )
-    
-with open(_ERF,"r",encoding="utf-8") as f: #有感地震
-    ewfi={}
+   
+
+with open("erf.json","r",encoding="utf-8") as f: #有感地震
     data = json.load(f)
-    ewfi.update(
-        _REPORTCOLOR=data["records"]["Earthquake"][0]["ReportColor"],
-        _REPORTCONTENT=data["records"]["Earthquake"][0]["ReportContent"],
-        _RECORDIMAGEURI=data["records"]["Earthquake"][0]["ReportImageURI"],
-        _WEB=data["records"]["Earthquake"][0]["Web"],
-        _ORIGINTIME=data["records"]["Earthquake"][0]["EarthquakeInfo"]["OriginTime"],
-        _LOCATION=data["records"]["Earthquake"][0]["EarthquakeInfo"]["Epicenter"]["Location"],
-        _EPICENTERLATITUDE=data["records"]["Earthquake"][0]["EarthquakeInfo"]["Epicenter"]["EpicenterLatitude"], #震央緯度
-        _EPICENTERLONGITUDE=data["records"]["Earthquake"][0]["EarthquakeInfo"]["Epicenter"]["EpicenterLongitude"],#震央經度
-        _MAGNITUDAVALUE=data["records"]["Earthquake"][0]["EarthquakeInfo"]["EarthquakeMagnitude"]["MagnitudeValue"], #"芮氏規模"
+    erf=ERF(
+            REPORTCOLOR=data["records"]["Earthquake"][0]["ReportColor"],
+            REPORTCONTENT=data["records"]["Earthquake"][0]["ReportContent"],
+            RECORDIMAGEURI=data["records"]["Earthquake"][0]["ReportImageURI"],
+            WEB=data["records"]["Earthquake"][0]["Web"],
+            ORIGINTIME=data["records"]["Earthquake"][0]["EarthquakeInfo"]["OriginTime"],
+            LOCATION=data["records"]["Earthquake"][0]["EarthquakeInfo"]["Epicenter"]["Location"],
+            EPICENTERLATITUDE=int(data["records"]["Earthquake"][0]["EarthquakeInfo"]["Epicenter"]["EpicenterLatitude"]), #震央緯度
+            EPICENTERLONGITUDE=int(data["records"]["Earthquake"][0]["EarthquakeInfo"]["Epicenter"]["EpicenterLongitude"]),#震央經度
+            MAGNITUDAVALUE=int(data["records"]["Earthquake"][0]["EarthquakeInfo"]["EarthquakeMagnitude"]["MagnitudeValue"]) #"芮氏規模"
     )
-
+   
 with open("C:\Code\Seismic-surveillance\data\E-A0015-003.json","r",encoding="utf-8") as f: 
     data = json.load(f)
     PICURL=data["cwaopendata"]["Dataset"]["Resource"]["ProductURL"]
@@ -88,13 +109,6 @@ with open("C:\Code\Seismic-surveillance\data\E-A0015-003.json","r",encoding="utf
     scaled_pixmap=pixmap.scaled(QtCore.QSize(500,420),QtCore.Qt.KeepAspectRatio)
     IMGlabel = QtWidgets.QLabel(Form)
     IMGlabel.setPixmap(scaled_pixmap)
-
-font = QtGui.QFont()  
-font.setFamily('源柔黑體')
-font.setPointSize(20)  
-label = QtWidgets.QLabel(Form)   
-label.setText(erf["_REPORTCOLOR"])     
-label.setFont(font)
 
 Form.show()
 sys.exit(app.exec_())
