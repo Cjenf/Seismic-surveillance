@@ -66,9 +66,10 @@ Form.resize(1800,800)
 
 Form.setWindowIcon(QtGui.QIcon('earth.jpg'))
 
-Form.setStyleSheet(
-    "background-color: #411F1F;"
-)
+Form.setStyleSheet('''
+        background-color:#543B3B;
+        
+''')
 
 with open("ewfi.json","r",encoding="utf-8") as f: #無感地震
     data = json.load(f)
@@ -99,6 +100,24 @@ with open("erf.json","r",encoding="utf-8") as f: #有感地震
             MAGNITUDAVALUE=int(data["records"]["Earthquake"][0]["EarthquakeInfo"]["EarthquakeMagnitude"]["MagnitudeValue"]) #"芮氏規模"
     )
    
+
+frame=QtWidgets.QFrame(Form)
+frame.setFrameShape(QtWidgets.QFrame.Box)
+frame.setFrameShadow(QtWidgets.QFrame.Sunken)
+frame.setLineWidth(2)
+frame.setGeometry(500,40,569,721)
+frame.setStyleSheet('''
+    QFrame {
+        background-color: #2E2828;
+        border: 10px outset #7F7474;
+        border-radius: 15px;
+        background-color: qlineargradient(spread:reflect, 
+                   x1:0, y1:0, x2:1, y2:1, stop:0 rgba(106, 100, 94, 0.8), 
+                   stop:1 rgba(70, 58, 47, 0.8));  /* 設置線性漸變背景 */  
+        
+    }
+''')
+
 with open("C:\Code\Seismic-surveillance\data\E-A0015-003.json","r",encoding="utf-8") as f: 
     data = json.load(f)
     PICURL=data["cwaopendata"]["Dataset"]["Resource"]["ProductURL"]
@@ -106,9 +125,15 @@ with open("C:\Code\Seismic-surveillance\data\E-A0015-003.json","r",encoding="utf
     image_data = BytesIO(response.content)
     pixmap = QtGui.QPixmap()
     pixmap.loadFromData(image_data.read())
-    scaled_pixmap=pixmap.scaled(QtCore.QSize(500,420),QtCore.Qt.KeepAspectRatio)
-    IMGlabel = QtWidgets.QLabel(Form)
-    IMGlabel.setPixmap(scaled_pixmap)
-
+    scaled_pixmap=pixmap.scaled(QtCore.QSize(700,799),QtCore.Qt.KeepAspectRatio)
+    image_label = QtWidgets.QLabel(Form)
+    image_label.setPixmap(scaled_pixmap)
+    image_label.setStyleSheet('''
+        QLabel{
+            background-color: transparent;  /* 使背景透明 */
+        } 
+    ''')
+    image_label.setGeometry(0, 0, 700, 799)
+    
 Form.show()
 sys.exit(app.exec_())
