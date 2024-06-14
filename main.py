@@ -8,7 +8,7 @@ import requests as req
 import json
 from io import BytesIO
 import datetime
-from get import ewfi, erf
+from lib import ewfi, erf
 
 path="C:\Code\Seismic-surveillance"
 app = QtWidgets.QApplication(sys.argv)

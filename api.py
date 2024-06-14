@@ -1,5 +1,5 @@
 from flask import Flask, jsonify
-from get import erf, ewfi
+from lib import erf, ewfi
 
 erf_data = erf.json()
 ewfi_data = ewfi.json()
