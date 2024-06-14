@@ -1,9 +1,6 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
-from typing import Union
-from pydantic import BaseModel
 import sys
 import json
-import os
 import requests as req
 import json
 from io import BytesIO
