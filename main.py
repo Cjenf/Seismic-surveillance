@@ -8,57 +8,7 @@ import requests as req
 import json
 from io import BytesIO
 import datetime
-
-
-class ERF(BaseModel):
-    REPORTCOLOR:Union[str,int]
-    REPORTCONTENT:Union[str,int]
-    RECORDIMAGEURI:Union[str,int]
-    WEB:Union[str,int]
-    ORIGINTIME:Union[str,int]
-    LOCATION:Union[str,int]
-    EPICENTERLATITUDE:int
-    EPICENTERLONGITUDE:int
-    MAGNITUDAVALUE:int
-
-class EWFI(BaseModel):
-    REPORTCOLOR:Union[str,int]
-    REPORTCONTENT:Union[str,int]
-    RECORDIMAGEURI:Union[str,int]
-    WEB:Union[str,int]
-    ORIGINTIME:Union[str,int]
-    LOCATION:Union[str,int]
-    EPICENTERLATITUDE:int
-    EPICENTERLONGITUDE:int
-    MAGNITUDAVALUE:int
-
-
-#無感地震
-try:
-    url="https://opendata.cwa.gov.tw/api/v1/rest/datastore/E-A0016-001?Authorization=CWA-877EA591-BC8A-4DD2-8B60-4272DAC4BBAC&format=JSON&AreaName="
-
-    r=req.get(url)
-    data=r.json()
-
-    file_path = 'ewfi.json'
-    with open(file_path, 'w') as file:
-        json.dump(data, file)
-
-except Exception as e:
-    print(e)
-#有感地震
-try:
-    url="https://opendata.cwa.gov.tw/api/v1/rest/datastore/E-A0015-001?Authorization=CWA-877EA591-BC8A-4DD2-8B60-4272DAC4BBAC"
-
-    r=req.get(url)
-    data=r.json()
-
-    file_path = 'erf.json'
-    with open(file_path, 'w') as file:
-        json.dump(data, file)
-
-except Exception as e:
-    print(e)    
+from get import ewfi, erf
 
 path="C:\Code\Seismic-surveillance"
 app = QtWidgets.QApplication(sys.argv)
@@ -78,39 +28,8 @@ def _get_currect_time():
     t=[]
     t.append(current_time)
     time_label.setText(list(map(lambda s : f"      {current_time} AM" if int(current_time[0:2])<12 else f"      {current_time} PM",t))[0])
-
-with open("ewfi.json","r",encoding="utf-8") as f: #無感地震
-    data = json.load(f)
-    ewfi=EWFI(
-            REPORTCOLOR=data["records"]["Earthquake"][0]["ReportColor"],
-            REPORTCONTENT=data["records"]["Earthquake"][0]["ReportContent"],
-            RECORDIMAGEURI=data["records"]["Earthquake"][0]["ReportImageURI"],
-            WEB=data["records"]["Earthquake"][0]["Web"],
-            ORIGINTIME=data["records"]["Earthquake"][0]["EarthquakeInfo"]["OriginTime"],
-            LOCATION=data["records"]["Earthquake"][0]["EarthquakeInfo"]["Epicenter"]["Location"],
-            EPICENTERLATITUDE=int(data["records"]["Earthquake"][0]["EarthquakeInfo"]["Epicenter"]["EpicenterLatitude"]), #震央緯度
-            EPICENTERLONGITUDE=int(data["records"]["Earthquake"][0]["EarthquakeInfo"]["Epicenter"]["EpicenterLongitude"]),#震央經度
-            MAGNITUDAVALUE=int(data["records"]["Earthquake"][0]["EarthquakeInfo"]["EarthquakeMagnitude"]["MagnitudeValue"]) #"芮氏規模"
-    )
-   
-
-with open("erf.json","r",encoding="utf-8") as f: #有感地震
-    data = json.load(f)
-    erf=ERF(
-            REPORTCOLOR=data["records"]["Earthquake"][0]["ReportColor"],
-            REPORTCONTENT=data["records"]["Earthquake"][0]["ReportContent"],
-            RECORDIMAGEURI=data["records"]["Earthquake"][0]["ReportImageURI"],
-            WEB=data["records"]["Earthquake"][0]["Web"],
-            ORIGINTIME=data["records"]["Earthquake"][0]["EarthquakeInfo"]["OriginTime"],
-            LOCATION=data["records"]["Earthquake"][0]["EarthquakeInfo"]["Epicenter"]["Location"],
-            EPICENTERLATITUDE=int(data["records"]["Earthquake"][0]["EarthquakeInfo"]["Epicenter"]["EpicenterLatitude"]), #震央緯度
-            EPICENTERLONGITUDE=int(data["records"]["Earthquake"][0]["EarthquakeInfo"]["Epicenter"]["EpicenterLongitude"]),#震央經度
-            MAGNITUDAVALUE=int(data["records"]["Earthquake"][0]["EarthquakeInfo"]["EarthquakeMagnitude"]["MagnitudeValue"]) #"芮氏規模"
-    )
    
 #時間
-
-
 font=QtGui.QFont()
 font.setFamily("STKaiti")
 
@@ -147,13 +66,9 @@ monday.setText("MON")
 monday.setGeometry(910,85,42,20)
 monday.setStyleSheet('''
     QLabel{
-        color:B6B4B4;
+        color:#B6B4B4;
         font-size:17px;
-        background-color:rgba(34, 26, 8, 0.63);        
-    }
-    
-    QLabel:hover{
-        color: #FCCCCC;          
+        background-color:rgba(0, 0, 0, 0);        
     }
 ''')
 monday.setFont(dfont)
@@ -163,21 +78,21 @@ if monday.text()==today_week_day:
         QLabel{
         color:#FFFFFF;
         font-size:21px;
-        background-color:rgba(34, 26, 8, 0.63);        
+        background-color:rgba(0, 0, 0, 0);        
     }
     
     QLabel:hover{
-        color: #FCCCCC;          
+        color: rgba(15, 11, 1, 0.27);         
     }
 ''')
     
 tuesday=QtWidgets.QLabel(Form)
 tuesday.setText("TUE")
-tuesday.setGeometry(1010,85,42,20)
+tuesday.setGeometry(1010,85,38,20)
 tuesday.setStyleSheet('''
-    color:B6B4B4;
+    color:#B6B4B4;
     font-size:17px;
-    background-color:rgba(34, 26, 8, 0.63);
+    background-color:rgba(0, 0, 0, 0);
 ''')
 tuesday.setFont(dfont)
 if tuesday.text()==today_week_day:
@@ -186,11 +101,11 @@ if tuesday.text()==today_week_day:
         QLabel{
         color:#FFFFFF;
         font-size:21px;
-        background-color:rgba(34, 26, 8, 0.63);        
+        background-color:rgba(0, 0, 0, 0);       
     }
     
     QLabel:hover{
-        color: #FCCCCC;          
+        color: rgba(15, 11, 1, 0.27);          
     }
 ''')
     
@@ -198,9 +113,9 @@ wendsday=QtWidgets.QLabel(Form)
 wendsday.setText("WEN")
 wendsday.setGeometry(1110,85,42,20)
 wendsday.setStyleSheet('''
-    color:B6B4B4;
+    color:#B6B4B4;
     font-size:17px;
-    background-color:rgba(34, 26, 8, 0.63);
+    background-color:rgba(0, 0, 0, 0);
 ''')
 wendsday.setFont(dfont)
 if wendsday.text()==today_week_day:
@@ -209,35 +124,34 @@ if wendsday.text()==today_week_day:
         QLabel{
         color:#FFFFFF;
         font-size:21px;
-        background-color:rgba(34, 26, 8, 0.63);        
+        background-color:rgba(0, 0, 0, 0);        
     }
     
     QLabel:hover{
-        color: #FCCCCC;          
+       color: rgba(15, 11, 1, 0.27);         
     }
 ''')
 
 thusday=QtWidgets.QLabel(Form)
 thusday.setText("THU")
-thusday.setGeometry(1210,85,42,20)
+thusday.setGeometry(1210,85,37,20)
 thusday.setStyleSheet('''
-    color:B6B4B4;
+    color:#B6B4B4;
     font-size:17px;
-    background-color:rgba(34, 26, 8, 0.63);
+    background-color:rgba(0, 0, 0, 0);
 ''')
 thusday.setFont(dfont)
 if thusday.text()==today_week_day:
-    thusday.setGeometry(1210,85,42,20)
+    thusday.setGeometry(1210,85,38,20)
     thusday.setStyleSheet('''
         QLabel{
         color:#FFFFFF;
         font-size:21px;
-        background-color:rgba(34, 26, 8, 0.63);        
+        background-color:rgba(0, 0, 0, 0);        
     }
     
         QLabel:hover{
-            color: #FCCCCC;  
-            font-size: 30px; /* 放大文字 */        
+            color: rgba(15, 11, 1, 0.27);       
     }
 ''')
     
@@ -247,20 +161,20 @@ friday.setGeometry(1310,85,31,18)
 friday.setStyleSheet('''
     color:#B6B4B4;
     font-size:17px;
-    background-color:rgba(34, 26, 8, 0.63);
+    background-color:rgba(0, 0, 0, 0);
 ''')
 friday.setFont(dfont)
 if friday.text()==today_week_day:
-    friday.setGeometry(1310,85,42,20)
+    friday.setGeometry(1310,85,37,17)
     friday.setStyleSheet('''
         QLabel{
         color:#FFFFFF;
         font-size:21px;
-        background-color:rgba(34, 26, 8, 0.63);        
+        background-color:rgba(0, 0, 0, 0);        
     }
     
     QLabel:hover{
-        color: #FCCCCC;          
+        color: rgba(15, 11, 1, 0.27);       
     }
 ''')
     
@@ -270,7 +184,7 @@ saturday.setGeometry(1410,85,36,20)
 saturday.setStyleSheet('''
     color:#B6B4B4;
     font-size:17px;
-    background-color:rgba(34, 26, 8, 0.63);
+    background-color:rgba(0, 0, 0, 0);
 ''')
 saturday.setFont(dfont)
 if saturday.text()==today_week_day:
@@ -279,11 +193,11 @@ if saturday.text()==today_week_day:
         QLabel{
         color:#FFFFFF;
         font-size:21px;
-        background-color:rgba(34, 26, 8, 0.63);        
+        background-color:rgba(0, 0, 0, 0);        
     }
     
     QLabel:hover{
-        color: #FCCCCC;          
+        color:  rgba(15, 11, 1, 0.27);          
     }
 ''')
 
@@ -293,7 +207,7 @@ sunday.setGeometry(1510,85,40,20)
 sunday.setStyleSheet('''
     color:#B6B4B4;
     font-size:17px;
-    background-color:rgba(34, 26, 8, 0.63);
+    background-color:rgba(0, 0, 0, 0);
 ''')
 sunday.setFont(dfont)
 if sunday.text()==today_week_day:
@@ -302,11 +216,11 @@ if sunday.text()==today_week_day:
         QLabel{
         color:#FFFFFF;
         font-size:21px;
-        background-color:rgba(34, 26, 8, 0.63);        
+        background-color:rgba(0, 0, 0, 0);        
     }
     
     QLabel:hover{
-        color: #FCCCCC;          
+        color: rgba(15, 11, 1, 0.27);         
     }
 ''')
 
@@ -319,22 +233,26 @@ timer.start(1000)
 current_date=current_date.replace(
     "-","/"
     )
-date_label=QtWidgets.QLabel()
+date_label=QtWidgets.QLabel(Form)
 date_label.setText(current_date)
-date_label.setGeometry(700,100,500,100)
+date_label.setGeometry(1144,276,95,21)
 date_label.setStyleSheet('''
-            font-size:110px;
+            font-size:20px;
+            color:#FFFFFF;
+            background-color:rgba(0, 0, 0, 0);
 ''')
+date_label.setFont(dfont)
 
-fontc=QtGui.QFont()
-fontc.setFamily("STKaiti")
-day_label=QtWidgets.QLabel()
+day_label=QtWidgets.QLabel(Form)
 day_label.setText(f"day {week_day}")
-day_label.setGeometry(806,250,400,100)
+day_label.setGeometry(1279,276,45,21)
+day_label.setFont(dfont)
 day_label.setStyleSheet('''
-            font-size:90px;
+            font-size:20px;
+            color:#FFFFFF;
+            background-color:rgba(0, 0, 0, 0);
+            
 ''')
-day_label.setFont(fontc)
 
 with open("C:\Code\Seismic-surveillance\data\E-A0015-003.json","r",encoding="utf-8") as f: 
     data = json.load(f)
@@ -352,6 +270,155 @@ with open("C:\Code\Seismic-surveillance\data\E-A0015-003.json","r",encoding="utf
         } 
     ''')
     image_label.setGeometry(0, 0, 700, 799)
-    
+
+frame=QtWidgets.QFrame(Form)
+frame.setGeometry(827, 412, 823, 288)
+frame.setStyleSheet('''
+    border-radius: 20px;
+    background-color:rgba(34, 26, 8, 0.63);
+''')
+
+ReportColor=QtWidgets.QLabel(Form)
+ReportColor.setText("ReportColor:")
+ReportColor.setGeometry(869, 440, 160, 30)
+ReportColor.setStyleSheet('''
+    font-size: 28px ;
+    color:#FFFFFF;
+    background-color: rgba(0, 0, 0, 0);
+''')
+ReportColor.setFont(dfont)
+
+color=QtWidgets.QLabel(Form)
+color.setText(erf.REPORTCOLOR)
+color.setGeometry(1033, 440, 43, 30)
+color.setStyleSheet('''
+    font-size: 20px ;
+    color:#FFFFFF;
+    background-color:rgba(0, 0, 0, 0);
+''')
+color.setFont(dfont)
+
+reportcontent=QtWidgets.QLabel(Form)
+reportcontent.setText("ReportContent:")
+reportcontent.setGeometry(869, 490, 180, 30)
+reportcontent.setStyleSheet('''
+    font-size: 28px ;
+    color:#FFFFFF;
+    background-color: rgba(0, 0, 0, 0);
+''')
+reportcontent.setFont(dfont)
+
+content=QtWidgets.QLabel(Form)
+content.setText(erf.REPORTCONTENT)
+content.setGeometry(1051, 496, 277, 70)
+content.setStyleSheet('''
+    font-size: 20px ;
+    color:#FFFFFF;
+    background-color: rgba(0, 0, 0, 0);
+''')
+content.setWordWrap(True)
+content.setFont(dfont)
+
+time=QtWidgets.QLabel(Form)
+time.setText("時間:")
+time.setFont(dfont)
+time.setGeometry(869, 561, 105, 62)
+time.setStyleSheet('''
+    font-size: 28px ;
+    color:#FFFFFF;
+    background-color:rgba(0, 0, 0, 0);
+''')
+
+origintime=QtWidgets.QLabel(Form)
+origintime.setText(erf.ORIGINTIME)
+origintime.setGeometry(940, 577, 200, 27)
+origintime.setStyleSheet('''
+    font-size: 20px ;
+    color:#FFFFFF;
+    background-color: rgba(0, 0, 0, 0);
+''')
+origintime.setFont(dfont)
+
+locate=QtWidgets.QLabel(Form)
+locate.setText("地點")
+locate.setFont(dfont)
+locate.setGeometry(1377, 444, 105, 62)
+locate.setStyleSheet('''
+    font-size: 53px ;
+    color:rgba(235, 215, 225, 0.62);
+    background-color:rgba(0, 0, 0, 0);
+''')
+
+location=QtWidgets.QLabel(Form)
+location.setText(erf.LOCATION)
+location.setGeometry(1388, 600, 80, 43)
+location.setStyleSheet('''
+    font-size: 40px ;
+    color:#FFFFFF;
+    background-color: rgba(0, 0, 0, 0);
+''')
+location.setFont(dfont)
+
+epicenterlatitude=QtWidgets.QLabel(Form)
+
+緯度=QtWidgets.QLabel(Form)
+緯度.setText("緯度:")
+緯度.setFont(dfont)
+緯度.setGeometry(869, 611, 105, 62)
+緯度.setStyleSheet('''
+    font-size: 28px ;
+    color:#FFFFFF;
+    background-color:rgba(0, 0, 0, 0);
+''')
+
+epicenterlatitude.setText(str(erf.EPICENTERLATITUDE))
+epicenterlatitude.setGeometry(942, 628, 47, 30)
+epicenterlatitude.setStyleSheet('''
+    font-size: 20px ;
+    color:#FFFFFF;
+    background-color: rgba(0, 0, 0, 0);
+''')
+epicenterlatitude.setFont(dfont)
+
+經度=QtWidgets.QLabel(Form)
+經度.setText("經度:")
+經度.setFont(dfont)
+經度.setGeometry(1010, 611, 105, 62)
+經度.setStyleSheet('''
+    font-size: 28px ;
+    color:#FFFFFF;
+    background-color:rgba(0, 0, 0, 0);
+''')
+
+epicenterlongitude=QtWidgets.QLabel(Form)
+epicenterlongitude.setText(str(float(erf.EPICENTERLONGITUDE)))
+epicenterlongitude.setGeometry(1080, 629, 100, 30)
+epicenterlongitude.setStyleSheet('''
+    font-size: 20px ;
+    color:#FFFFFF;
+    background-color: rgba(0, 0, 0, 0);
+''')
+epicenterlongitude.setFont(dfont)
+
+magnitudetype=QtWidgets.QLabel(Form)
+magnitudetype.setText("芮氏")
+magnitudetype.setGeometry(1522, 449, 102, 50)
+magnitudetype.setStyleSheet('''
+    font-size: 53px ;
+    color:rgba(235, 215, 225, 0.62);
+    background-color: rgba(0, 0, 0, 0);
+''')
+magnitudetype.setFont(dfont)
+                            
+magnitudavalue=QtWidgets.QLabel(Form)
+magnitudavalue.setText(str(erf.MAGNITUDAVALUE))
+magnitudavalue.setGeometry(1555, 608, 40, 30)
+magnitudavalue.setStyleSheet('''
+    font-size: 40px ;
+    color:#FFFFFF;
+    background-color: rgba(0, 0, 0, 0);
+''')
+magnitudavalue.setFont(dfont)
+
 Form.show()
 sys.exit(app.exec_())
