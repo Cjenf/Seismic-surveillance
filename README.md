@@ -10,7 +10,3 @@ cd Seismic-surveillance
 ```py
 main.py
 ```
-### API
-```
-api.py
-```
