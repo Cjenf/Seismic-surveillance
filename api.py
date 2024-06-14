@@ -6,11 +6,11 @@ ewfi_data = ewfi.json()
 
 app = Flask(__name__)
 
-@app.route('/api/erf_', methods=['GET'])
+@app.route('/erf', methods=['GET'])
 def get_erf():
     return jsonify(erf_data)
 
-@app.route('/api/ewfi', methods=['GET'])
+@app.route('/ewfi', methods=['GET'])
 def get_ewfi():
     return jsonify(ewfi_data)
 
