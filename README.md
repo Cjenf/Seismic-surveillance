@@ -10,3 +10,15 @@ cd Seismic-surveillance
 ```py
 main.py
 ```
+### API
+```py
+import requests
+
+# GET /erf
+erf_response = requests.get("https://seismic-surveillance-ydzk.vercel.app/erf")
+if erf_response.status_code == 200:
+    erf_data = erf_response.json()
+    print("ERF Data:", erf_data)
+else:
+    print("Failed to retrieve ERF data")
+```
