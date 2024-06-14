@@ -6,3 +6,4 @@
 git clone https://github.com/Cjenf/Seismic-surveillance.git
 cd Seismic-surveillance
 ```
+Run code
