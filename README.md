@@ -6,4 +6,11 @@
 git clone https://github.com/Cjenf/Seismic-surveillance.git
 cd Seismic-surveillance
 ```
-Run code
+### Run code
+```py
+main.py
+```
+### API
+```
+api.py
+```
